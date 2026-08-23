@@ -184,7 +184,7 @@ actor APIClient {
         }
 
         if let body = endpoint.body {
-            request.httpBody = try encoder.encode(AnyEncodable(body))
+            request.httpBody = try encoder.encode(body)
         }
         return request
     }

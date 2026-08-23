@@ -139,15 +139,16 @@ enum Endpoint {
         }
     }
 
-    /// JSON body for write endpoints.
-    var body: Encodable? {
+    /// JSON body for write endpoints, type-erased so the client can encode it
+    /// without opening an existential.
+    var body: AnyEncodable? {
         switch self {
         case .login(let email, let password, let deviceName):
-            return LoginRequest(email: email, password: password, deviceName: deviceName)
+            return AnyEncodable(LoginRequest(email: email, password: password, deviceName: deviceName))
         case .updateProfile(let fields):
-            return fields
+            return AnyEncodable(fields)
         case .submitQuiz(_, let answers):
-            return ["answers": answers]
+            return AnyEncodable(["answers": answers])
         default:
             return nil
         }
