@@ -80,3 +80,17 @@ xcrun altool --upload-app -f build/export/*.ipa -t ios \
 - The Sanctum token is stored only in the Keychain; credentials are never persisted.
 - `extraction/` and `EXTRACTION.md` remain gitignored — they are for authorized,
   locally-run forensic capture only and must never be committed.
+
+## Continuous Integration
+
+`.github/workflows/ci.yml` compiles the app (XcodeGen + `xcodebuild` against the
+iOS Simulator SDK, no signing). Building an iOS app requires a **macOS** runner,
+so the workflow is set to **manual dispatch** (`workflow_dispatch`) by default —
+GitHub-hosted macOS Actions minutes are billable and aren't provisioned on every
+plan/repo. To run CI automatically on every push/PR:
+
+1. Enable GitHub-hosted macOS Actions for the repo (set an Actions spending limit),
+   **or** register a self-hosted macOS runner.
+2. Change the `on:` trigger in `ci.yml` back to `push` / `pull_request`.
+
+Until then, build locally on a Mac with `./build-and-install.sh` (see above).

@@ -1,10 +1,12 @@
 name: CI
 
+# NOTE: This job builds the iOS app, which requires a GitHub-hosted macOS runner
+# (or a self-hosted Mac). It is set to manual dispatch only: enable GitHub-hosted
+# macOS Actions for this repo (set an Actions spending limit — macOS minutes are
+# billable) or register a self-hosted macOS runner, then switch the trigger below
+# back to `push` / `pull_request` to validate every change automatically.
 on:
-  push:
-    branches: [ main, "claude/**" ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
