@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var auth: AuthManager
     @EnvironmentObject private var roles: RoleManager
+    @EnvironmentObject private var skin: SkinManager
     @Environment(\.dismiss) private var dismiss
 
     private var user: User? {
@@ -32,12 +33,36 @@ struct SettingsView: View {
                 }
                 .padding(.top, Theme.Spacing.sm)
 
+                dataSkinControl
+
                 Spacer(minLength: Theme.Spacing.xxl)
             }
             .padding(Theme.Spacing.lg)
         }
         .background(Theme.Color.surfaceGrouped.ignoresSafeArea())
         .navigationBarBackButtonHidden()
+    }
+
+    // MARK: - Data skin (discreet demo toggle)
+
+    /// A low-key control to switch the whole app between the "Current" snapshot
+    /// and a "Growth" skin whose numbers ramp up over time. Front-end demo only.
+    private var dataSkinControl: some View {
+        VStack(spacing: Theme.Spacing.xs) {
+            Picker("", selection: Binding(
+                get: { skin.skin },
+                set: { skin.skin = $0 }
+            )) {
+                ForEach(AppSkin.allCases) { Text($0.label).tag($0) }
+            }
+            .pickerStyle(.segmented)
+
+            Text("Demo data · \(skin.skin == .growth ? "Growth (ramps over time)" : "Current snapshot")")
+                .font(Theme.Font.caption)
+                .foregroundStyle(Theme.Color.textSecondary)
+        }
+        .padding(.horizontal, Theme.Spacing.xs)
+        .opacity(0.9)
     }
 
     // MARK: - Header (back pill + centered title)
@@ -204,4 +229,5 @@ struct Avatar: View {
     NavigationStack { SettingsView() }
         .environmentObject(AuthManager(roleManager: RoleManager()))
         .environmentObject(RoleManager())
+        .environmentObject(SkinManager())
 }

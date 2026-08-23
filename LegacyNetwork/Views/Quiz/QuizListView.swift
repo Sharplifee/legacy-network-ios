@@ -8,7 +8,7 @@ struct QuizListView: View {
                     isEmpty: { $0.isEmpty },
                     emptyTitle: "No quizzes available",
                     load: {
-            try await appState.client.request(.quizList, as: [Quiz].self)
+            try await appState.data.quizzes()
         }) { quizzes in
             ScrollView {
                 VStack(spacing: Theme.Spacing.md) {

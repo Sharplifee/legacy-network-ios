@@ -5,7 +5,7 @@ struct EarningsView: View {
 
     var body: some View {
         AsyncScreen(title: "Earnings", load: {
-            try await appState.client.request(.earningsSummary, as: EarningsSummary.self)
+            try await appState.data.earningsSummary()
         }) { summary in
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {

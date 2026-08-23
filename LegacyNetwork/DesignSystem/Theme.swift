@@ -34,15 +34,28 @@ enum Theme {
 
         static let separator = SwiftUI.Color(.separator)
 
-        static let success = SwiftUI.Color(hex: 0x2FB56B)
-        static let warning = SwiftUI.Color(hex: 0xE0A82E)
-        static let danger = SwiftUI.Color(hex: 0xD64545)
+        // Values below reconciled against the live web app's app.css
+        // (hotfix-beta-1.5.8.1). Do not guess — these are the real hexes.
+        static let primaryPressed = SwiftUI.Color(hex: 0x265399)   // darker blue
+        static let success = SwiftUI.Color(hex: 0x28A745)          // bootstrap-ish green
+        static let successBright = SwiftUI.Color(hex: 0x30DF80)
+        static let warning = SwiftUI.Color(hex: 0xF4A45E)          // orange accent
+        static let danger = SwiftUI.Color(hex: 0xDC3545)
+        static let dangerBright = SwiftUI.Color(hex: 0xDE0E0E)
+        static let neutralText = SwiftUI.Color(hex: 0x7E7E7E)      // secondary gray text
+        static let neutralFill = SwiftUI.Color(hex: 0xF1F1F2)      // light row/section fill
+        static let neutralFillAlt = SwiftUI.Color(hex: 0xFBFBFD)
     }
 
     // MARK: - Typography
 
     enum Font {
-        static let fontFamily = "Helvetica Neue"
+        /// The web app renders in Open Sans (Google Fonts, weights 300–800),
+        /// confirmed from app.css. Bundle the Open Sans TTFs and register them
+        /// via UIAppFonts for exact fidelity; until then `.custom` falls back to
+        /// the system font, which `PostScript`-matches closely enough to keep
+        /// layouts intact.
+        static let fontFamily = "Open Sans"
 
         static func regular(_ size: CGFloat) -> SwiftUI.Font {
             .custom(fontFamily, size: size).weight(.regular)

@@ -10,6 +10,7 @@ struct LegacyNetworkApp: App {
                 .environmentObject(appState)
                 .environmentObject(appState.auth)
                 .environmentObject(appState.roleManager)
+                .environmentObject(appState.skinManager)
                 .task { await appState.bootstrap() }
                 .tint(Theme.Color.primary)
         }

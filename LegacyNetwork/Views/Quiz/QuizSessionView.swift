@@ -11,7 +11,7 @@ struct QuizSessionView: View {
 
     var body: some View {
         AsyncScreen(title: "Quiz", load: {
-            try await appState.client.request(.quizSession(id: quizId), as: QuizSession.self)
+            try await appState.data.quizSession(id: quizId)
         }) { session in
             if let result {
                 QuizResultsView(result: result)
@@ -69,9 +69,8 @@ struct QuizSessionView: View {
     private func submit(_ session: QuizSession) async {
         submitting = true
         defer { submitting = false }
-        let payload = answers.mapValues { AnyEncodable($0) }
         do {
-            result = try await appState.client.request(.submitQuiz(id: quizId, answers: payload), as: QuizResult.self)
+            result = try await appState.data.submitQuiz(id: quizId, answers: answers)
         } catch {
             // Surface via a lightweight alert hook in a fuller build.
         }

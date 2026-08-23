@@ -9,7 +9,7 @@ struct AchievementsView: View {
                     isEmpty: { $0.isEmpty },
                     emptyTitle: "No achievements yet",
                     load: {
-            try await appState.client.request(.achievements, as: [Achievement].self)
+            try await appState.data.achievements()
         }) { items in
             ScrollView {
                 LazyVGrid(columns: columns, spacing: Theme.Spacing.md) {

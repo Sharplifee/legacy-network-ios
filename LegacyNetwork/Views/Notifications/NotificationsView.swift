@@ -8,7 +8,7 @@ struct NotificationsView: View {
                     isEmpty: { $0.items.isEmpty },
                     emptyTitle: "You're all caught up",
                     load: {
-            try await appState.client.request(.notifications(page: 1), as: Paginated<NotificationItem>.self)
+            try await appState.data.notifications(page: 1)
         }) { page in
             List(page.items) { n in
                 HStack(alignment: .top, spacing: Theme.Spacing.md) {

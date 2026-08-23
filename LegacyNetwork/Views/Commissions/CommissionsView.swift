@@ -8,7 +8,7 @@ struct CommissionsView: View {
                     isEmpty: { $0.items.isEmpty },
                     emptyTitle: "No commissions yet",
                     load: {
-            try await appState.client.request(.commissions(page: 1), as: Paginated<Commission>.self)
+            try await appState.data.commissions(page: 1)
         }) { page in
             List(page.items) { c in
                 HStack {

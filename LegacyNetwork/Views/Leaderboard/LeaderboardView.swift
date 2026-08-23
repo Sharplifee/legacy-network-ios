@@ -18,7 +18,7 @@ struct LeaderboardView: View {
                         isEmpty: { $0.isEmpty },
                         emptyTitle: "No rankings yet",
                         load: {
-                try await appState.client.request(.leaderboard(period: period), as: [LeaderboardEntry].self)
+                try await appState.data.leaderboard(period: period)
             }) { entries in
                 List(entries) { entry in
                     HStack(spacing: Theme.Spacing.md) {

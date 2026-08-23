@@ -11,7 +11,7 @@ struct AdminDashboardView: View {
         Group {
             if roles.active == .admin && roles.canUseAdmin {
                 AsyncScreen(title: "Admin", load: {
-                    try await appState.client.request(.adminMetrics, as: AdminMetrics.self)
+                    try await appState.data.adminMetrics()
                 }) { metrics in
                     ScrollView {
                         VStack(alignment: .leading, spacing: Theme.Spacing.lg) {
@@ -61,7 +61,7 @@ struct AdminMembersView: View {
                     isEmpty: { $0.items.isEmpty },
                     emptyTitle: "No members",
                     load: {
-            try await appState.client.request(.adminMembers(page: 1), as: Paginated<AdminMember>.self)
+            try await appState.data.adminMembers(page: 1)
         }) { page in
             List(page.items) { m in
                 NavigationLink { AdminMemberDetailView(id: m.id) } label: {
@@ -81,7 +81,7 @@ struct AdminMemberDetailView: View {
     let id: Int
     var body: some View {
         AsyncScreen(title: "Member", load: {
-            try await appState.client.request(.adminMemberDetail(id: "\(id)"), as: AdminMember.self)
+            try await appState.data.adminMemberDetail(id: id)
         }) { m in
             ScrollView {
                 Card {
@@ -107,7 +107,7 @@ struct AdminPayoutsView: View {
                     isEmpty: { $0.items.isEmpty },
                     emptyTitle: "No payouts",
                     load: {
-            try await appState.client.request(.adminPayouts(page: 1), as: Paginated<AdminPayout>.self)
+            try await appState.data.adminPayouts(page: 1)
         }) { page in
             List(page.items) { p in
                 HStack {

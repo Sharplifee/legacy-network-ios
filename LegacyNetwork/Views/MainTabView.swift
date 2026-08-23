@@ -4,6 +4,7 @@ import SwiftUI
 /// admin-only destinations never appear for distributor-role users.
 struct MainTabView: View {
     @EnvironmentObject private var roles: RoleManager
+    @EnvironmentObject private var skin: SkinManager
 
     var body: some View {
         TabView {
@@ -27,8 +28,8 @@ struct MainTabView: View {
             NavigationStack { SettingsView() }
                 .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
-        // Re-render tab set when role flips.
-        .id(roles.active)
+        // Re-render (and re-fetch data) when the role or data skin changes.
+        .id("\(roles.active.rawValue)-\(skin.skin.rawValue)")
         .animation(Theme.Motion.standard, value: roles.active)
     }
 }

@@ -5,8 +5,8 @@ struct TokenView: View {
 
     var body: some View {
         AsyncScreen(title: "LGCT", load: {
-            async let balance = appState.client.request(.tokenBalance, as: TokenBalance.self)
-            async let txns = appState.client.request(.tokenTransactions(page: 1), as: Paginated<TokenTransaction>.self)
+            async let balance = appState.data.tokenBalance()
+            async let txns = appState.data.tokenTransactions(page: 1)
             return try await (balance: balance, txns: txns)
         }) { data in
             ScrollView {

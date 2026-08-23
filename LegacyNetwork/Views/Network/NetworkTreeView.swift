@@ -5,7 +5,7 @@ struct NetworkTreeView: View {
 
     var body: some View {
         AsyncScreen(title: "Network", load: {
-            try await appState.client.request(.networkTree(rootID: nil), as: NetworkNode.self)
+            try await appState.data.networkTree()
         }) { root in
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {

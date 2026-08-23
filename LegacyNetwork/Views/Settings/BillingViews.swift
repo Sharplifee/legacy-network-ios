@@ -4,7 +4,7 @@ struct SubscriptionView: View {
     @EnvironmentObject private var appState: AppState
     var body: some View {
         AsyncScreen(title: "Subscription", load: {
-            try await appState.client.request(.subscription, as: Subscription.self)
+            try await appState.data.subscription()
         }) { sub in
             ScrollView {
                 VStack(spacing: Theme.Spacing.lg) {
@@ -39,7 +39,7 @@ struct PaymentMethodsView: View {
                     isEmpty: { $0.isEmpty },
                     emptyTitle: "No payment methods",
                     load: {
-            try await appState.client.request(.paymentMethods, as: [PaymentMethod].self)
+            try await appState.data.paymentMethods()
         }) { methods in
             List(methods) { m in
                 HStack(spacing: Theme.Spacing.md) {
@@ -67,7 +67,7 @@ struct PaymentHistoryView: View {
                     isEmpty: { $0.items.isEmpty },
                     emptyTitle: "No payments yet",
                     load: {
-            try await appState.client.request(.paymentHistory(page: 1), as: Paginated<PaymentHistoryItem>.self)
+            try await appState.data.paymentHistory(page: 1)
         }) { page in
             List(page.items) { p in
                 HStack {

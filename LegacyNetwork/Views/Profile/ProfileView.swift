@@ -5,7 +5,7 @@ struct ProfileView: View {
 
     var body: some View {
         AsyncScreen(title: "Profile", load: {
-            try await appState.client.request(.profile, as: User.self)
+            try await appState.data.profile()
         }) { user in
             ScrollView {
                 VStack(spacing: Theme.Spacing.lg) {

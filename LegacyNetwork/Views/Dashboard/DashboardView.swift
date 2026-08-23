@@ -8,7 +8,7 @@ struct DashboardView: View {
 
     var body: some View {
         AsyncScreen(title: "Dashboard", load: {
-            try await appState.client.request(.dashboard, as: DashboardData.self)
+            try await appState.data.dashboard()
         }) { data in
             ScrollView {
                 VStack(alignment: .leading, spacing: Theme.Spacing.lg) {

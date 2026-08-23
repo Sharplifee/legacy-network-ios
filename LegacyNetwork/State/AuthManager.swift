@@ -1,12 +1,11 @@
 import Foundation
 
-/// Authentication state machine. Exchanges credentials for a Sanctum token,
-/// stores only the token (never the credentials) in the Keychain, loads the
-/// current user, and clears everything on logout or 401.
+/// Authentication state machine. Talks to a `DataService` (mock by default),
+/// stores only a session token in the Keychain, and clears it on logout / 401.
 @MainActor
 final class AuthManager: ObservableObject {
     enum Status: Equatable {
-        case unknown          // launching, deciding
+        case unknown
         case signedOut
         case signedIn(User)
     }
@@ -16,16 +15,16 @@ final class AuthManager: ObservableObject {
     @Published var isAuthenticating = false
 
     private let keychain = KeychainStore()
-    private var client: APIClient!
     private let roleManager: RoleManager
+    private var dataProvider: (() -> DataService)!
 
     init(roleManager: RoleManager) {
         self.roleManager = roleManager
     }
 
-    /// Wire the client after construction (breaks the init cycle with APIClient).
-    func attach(client: APIClient) {
-        self.client = client
+    /// Wire the data source after construction (breaks the init cycle).
+    func attach(dataProvider: @escaping () -> DataService) {
+        self.dataProvider = dataProvider
     }
 
     /// Thread-safe token accessor for the networking layer.
@@ -35,17 +34,15 @@ final class AuthManager: ObservableObject {
 
     // MARK: - Session lifecycle
 
-    /// Called on launch: if a token exists, try to restore the session.
     func restoreSession() async {
         guard keychain.get(.sanctumToken) != nil else {
             status = .signedOut
             return
         }
         do {
-            let user = try await client.request(.currentUser, as: User.self)
+            let user = try await dataProvider().currentUser()
             applySignedIn(user)
         } catch {
-            // Token invalid/expired — start clean.
             await signOut()
         }
     }
@@ -54,12 +51,8 @@ final class AuthManager: ObservableObject {
         isAuthenticating = true
         loginError = nil
         defer { isAuthenticating = false }
-
         do {
-            let result = try await client.request(
-                .login(email: email, password: password, deviceName: "LegacyNetwork-iOS"),
-                as: LoginResponse.self
-            )
+            let result = try await dataProvider().login(email: email, password: password)
             keychain.set(result.token, for: .sanctumToken)
             applySignedIn(result.user)
         } catch let error as APIError {
@@ -70,16 +63,14 @@ final class AuthManager: ObservableObject {
     }
 
     func signOut() async {
-        // Best-effort server logout; ignore failures.
-        try? await client.send(.logout)
+        try? await dataProvider().logout()
         keychain.delete(.sanctumToken)
-        await client.clearCaches()
         roleManager.canUseAdmin = false
         roleManager.set(.distributor)
         status = .signedOut
     }
 
-    /// Invoked by APIClient on a 401.
+    /// Invoked by APIClient on a 401 (live backend only).
     func handleUnauthorized() async {
         keychain.delete(.sanctumToken)
         status = .signedOut
