@@ -43,6 +43,15 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 
+	<!-- Bundled Open Sans faces (SIL OFL). Referenced by PostScript name in Theme. -->
+	<key>UIAppFonts</key>
+	<array>
+		<string>OpenSans-Regular.ttf</string>
+		<string>OpenSans-Medium.ttf</string>
+		<string>OpenSans-SemiBold.ttf</string>
+		<string>OpenSans-Bold.ttf</string>
+	</array>
+
 	<!-- App Transport Security: force TLS for all API traffic -->
 	<key>NSAppTransportSecurity</key>
 	<dict>

@@ -12,10 +12,10 @@ struct LegacyWordmark: View {
                 .frame(width: size * 1.6, height: size * 1.6)
             VStack(alignment: .leading, spacing: 0) {
                 Text("LEGACY")
-                    .font(.custom(Theme.Font.fontFamily, size: size).weight(.bold))
+                    .font(Theme.Font.bold(size))
                     .foregroundStyle(tint)
                 Text("NETWORK")
-                    .font(.custom(Theme.Font.fontFamily, size: size * 0.5).weight(.regular))
+                    .font(Theme.Font.regular(size * 0.5))
                     .tracking(size * 0.28)   // letterspaced
                     .foregroundStyle(tint)
             }

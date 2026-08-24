@@ -51,20 +51,29 @@ enum Theme {
 
     enum Font {
         /// The web app renders in Open Sans (Google Fonts, weights 300–800),
-        /// confirmed from app.css. Bundle the Open Sans TTFs and register them
-        /// via UIAppFonts for exact fidelity; until then `.custom` falls back to
-        /// the system font, which `PostScript`-matches closely enough to keep
-        /// layouts intact.
+        /// confirmed from app.css. The Regular/Medium/SemiBold/Bold TTFs are
+        /// bundled (SIL OFL) and registered via `UIAppFonts` in Info.plist.
+        ///
+        /// Faces are referenced by their exact **PostScript name**, not by
+        /// family + weight: Open Sans ships Medium and SemiBold under separate
+        /// legacy family names ("Open Sans Medium", "Open Sans SemiBold"), so a
+        /// family+weight lookup would fail to find them and synthesize a faux
+        /// weight. Naming the face directly avoids that. The trailing `.weight`
+        /// is a no-op when the face loads and keeps the system fallback correct
+        /// if the font is ever missing.
         static let fontFamily = "Open Sans"
 
         static func regular(_ size: CGFloat) -> SwiftUI.Font {
-            .custom(fontFamily, size: size).weight(.regular)
+            .custom("OpenSans-Regular", size: size).weight(.regular)
         }
         static func medium(_ size: CGFloat) -> SwiftUI.Font {
-            .custom(fontFamily, size: size).weight(.medium)
+            .custom("OpenSans-Medium", size: size).weight(.medium)
+        }
+        static func semibold(_ size: CGFloat) -> SwiftUI.Font {
+            .custom("OpenSans-SemiBold", size: size).weight(.semibold)
         }
         static func bold(_ size: CGFloat) -> SwiftUI.Font {
-            .custom(fontFamily, size: size).weight(.bold)
+            .custom("OpenSans-Bold", size: size).weight(.bold)
         }
 
         // Semantic scale (supports Dynamic Type via relativeTo where used).
