@@ -58,6 +58,7 @@ enum Endpoint {
 
     // Subscription & payments
     case subscription
+    case checkoutPlans
     case paymentMethods
     case paymentHistory(page: Int)
 
@@ -110,6 +111,7 @@ enum Endpoint {
         case .xpSummary:                return "/api/v2/gamification/summary"
 
         case .subscription:             return "/api/v2/subscription"
+        case .checkoutPlans:            return "/api/v2/plans"
         case .paymentMethods:           return "/api/v2/payment/methods"
         case .paymentHistory:           return "/api/v2/payment/history"
 

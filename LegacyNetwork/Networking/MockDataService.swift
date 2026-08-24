@@ -186,6 +186,48 @@ struct MockDataService: DataService {
         Subscription(planName: "Legacy Pro", status: "active", renewsAt: daysAhead(18),
                      priceLabel: "$49.00 / mo", processor: "stripe")
     }
+    func checkoutPlans() async throws -> [CheckoutPlan] {
+        [
+            CheckoutPlan(
+                id: "starter", name: "Legacy Starter", priceMonthly: 19,
+                priceLabel: "$19.00", period: "per month",
+                tagline: "Get started building your network.",
+                features: [
+                    "Personal distributor dashboard",
+                    "Up to 2 network levels",
+                    "Standard commission rate",
+                    "Community learning quizzes",
+                ],
+                isPopular: false, badge: nil
+            ),
+            CheckoutPlan(
+                id: "pro", name: "Legacy Pro", priceMonthly: 49,
+                priceLabel: "$49.00", period: "per month",
+                tagline: "For active distributors growing a team.",
+                features: [
+                    "Everything in Starter",
+                    "Unlimited network levels",
+                    "Boosted commission rate + LGCT rewards",
+                    "Full leaderboard & earnings analytics",
+                    "Priority support",
+                ],
+                isPopular: true, badge: "Most popular"
+            ),
+            CheckoutPlan(
+                id: "elite", name: "Legacy Elite", priceMonthly: 99,
+                priceLabel: "$99.00", period: "per month",
+                tagline: "Maximum earning power and tools.",
+                features: [
+                    "Everything in Pro",
+                    "Admin & team management tools",
+                    "Highest commission tier",
+                    "Early access to new features",
+                    "Dedicated account manager",
+                ],
+                isPopular: false, badge: "Best value"
+            ),
+        ]
+    }
     func paymentMethods() async throws -> [PaymentMethod] {
         [
             PaymentMethod(id: "pm1", brand: "visa", last4: "4242", expMonth: 8, expYear: 2028, isDefault: true),

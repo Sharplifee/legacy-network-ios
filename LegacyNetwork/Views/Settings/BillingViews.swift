@@ -24,6 +24,25 @@ struct SubscriptionView: View {
                             }
                         }
                     }
+
+                    NavigationLink {
+                        CheckoutView()
+                    } label: {
+                        HStack {
+                            Text("Change plan")
+                                .font(Theme.Font.headline)
+                                .foregroundStyle(Theme.Color.textOnPrimary)
+                            Spacer()
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(Theme.Color.textOnPrimary)
+                        }
+                        .padding(.horizontal, Theme.Spacing.lg)
+                        .frame(height: 52)
+                        .background(Theme.Color.primary)
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(Theme.Spacing.lg)
             }

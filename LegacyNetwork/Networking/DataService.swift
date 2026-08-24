@@ -27,6 +27,7 @@ protocol DataService: Sendable {
     func achievements() async throws -> [Achievement]
 
     func subscription() async throws -> Subscription
+    func checkoutPlans() async throws -> [CheckoutPlan]
     func paymentMethods() async throws -> [PaymentMethod]
     func paymentHistory(page: Int) async throws -> Paginated<PaymentHistoryItem>
 
@@ -65,6 +66,7 @@ struct LiveDataService: DataService {
     }
     func achievements() async throws -> [Achievement] { try await client.request(.achievements) }
     func subscription() async throws -> Subscription { try await client.request(.subscription) }
+    func checkoutPlans() async throws -> [CheckoutPlan] { try await client.request(.checkoutPlans) }
     func paymentMethods() async throws -> [PaymentMethod] { try await client.request(.paymentMethods) }
     func paymentHistory(page: Int) async throws -> Paginated<PaymentHistoryItem> { try await client.request(.paymentHistory(page: page)) }
     func adminMetrics() async throws -> AdminMetrics { try await client.request(.adminMetrics) }
