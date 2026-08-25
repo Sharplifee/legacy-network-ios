@@ -5,6 +5,32 @@ Version **1.0.0** (build **1**). Bundle id `com.legacynetwork.app`. Team `XF7839
 > All build/sign/archive steps require **macOS + Xcode**. This scaffold was
 > authored in a Linux CI environment, so the commands below must be run on a Mac.
 
+## 0. What this build is
+
+A **front-end visual replica** with **no backend integration**. Every screen,
+tab, button, and the full checkout flow are present and interactive, but they run
+entirely on in-memory fixtures — no network calls, no real user/payment data, no
+payment processing.
+
+- **Data source:** `MockDataService` (see `LegacyNetwork/Networking/DataService.swift`).
+  A discreet **Current / Growth** skin toggle on the Settings page switches the
+  whole app between a populated "current snapshot" and a "growth" skin whose
+  numbers ramp up over real elapsed time.
+- **Going live later:** the real `APIClient` + `LiveDataService` are retained.
+  Swap the one line in `AppState.data` from `MockDataService(...)` to
+  `LiveDataService(client:)` to run against the backend (after reconciling models
+  and endpoint paths against captured responses).
+- **Checkout:** `LegacyNetwork/Views/Checkout/CheckoutView.swift` — plan select →
+  card + billing form → review → Pay → confirmation. Interactive but
+  **non-processing**; the "Pay" button simulates a delay then shows a confirmation.
+- **Fonts:** Open Sans (Regular/Medium/SemiBold/Bold, SIL OFL) is bundled under
+  `Resources/Fonts` and registered via `UIAppFonts`. `Theme.Font` references each
+  face by its exact PostScript name.
+
+> **Not yet compiled.** Authored on Linux with no Swift toolchain. Expect to run
+> `xcodegen generate` + a first Xcode build to catch any first-compile
+> adjustments before it runs on device.
+
 ## 1. Prerequisites
 
 ```bash
@@ -71,7 +97,12 @@ xcrun altool --upload-app -f build/export/*.ipa -t ios \
 - [x] ATS enabled — `NSAllowsArbitraryLoads = false`, TLS 1.2+ pinned for `api.legacynetwork.com`
 - [x] `aps-environment` entitlement (push scaffold) — flip to `production` before store submit
 - [x] No hardcoded credentials, debug `print`, or extraction artifacts in the shipping target
-- [ ] Reconcile all models + endpoint paths against captured live responses (see `LegacyNetwork/Models/README_MODELS.md`)
+- [x] Open Sans faces bundled + registered via `UIAppFonts`
+- [ ] `xcodegen generate` + first Xcode build on a Mac; resolve any first-compile adjustments
+- [ ] Provide screenshots of the logged-in web screens and reconcile each screen's
+      mock data + copy to exact fidelity (blocked on owner-supplied screenshots)
+- [ ] (Only if wiring the real backend) reconcile models + endpoint paths against
+      captured live responses (see `LegacyNetwork/Models/README_MODELS.md`)
 - [ ] Provide App Store screenshots + privacy nutrition label in App Store Connect
 - [ ] Switch push entitlement to `production` and add real APNs handling
 
