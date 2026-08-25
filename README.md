@@ -58,3 +58,29 @@ LegacyNetwork/
 - Never edit `.xcodeproj` or `Info.plist` directly — they are generated from `project.yml`
 - The `extraction/` directory is gitignored: it contains live production user data
 - No credentials are committed to this repository
+## Status
+
+This branch is a **complete, self-consistent SwiftUI scaffold** authored in a
+Linux CI environment. It has **not** been compiled or signed (that requires
+macOS + Xcode) and no live production data was extracted to build it.
+
+- **Design system, networking, auth, and navigation** are production-shaped:
+  typed `Endpoint` enum, async/await `APIClient` (retry + backoff, response
+  cache, offline queue, 401 handling, role-aware routing), Keychain-stored
+  Sanctum token, and role-based tab navigation.
+- **Every screen** in the spec is implemented with loading / error / empty
+  states: Login, Settings, Dashboard, Profile, Network tree (expand/collapse),
+  Leaderboard, Commissions, Earnings, LGCT token wallet, Quiz list/session/
+  results, Achievements, XP/Level/Streak, Notifications, Subscription, Payment
+  Information, Payment History, plus admin Dashboard/Members/Member detail/
+  Payouts.
+- **Models are seeded from the documented domain, not captured JSON.** Before
+  shipping, reconcile field names and endpoint paths against real responses —
+  see `LegacyNetwork/Models/README_MODELS.md` and `RELEASE.md`.
+
+### Next steps to a shippable build (on a Mac)
+
+1. `brew install xcodegen && xcodegen generate`
+2. Open in Xcode, resolve any first-compile adjustments.
+3. Run the authorized forensic capture, then reconcile `Models/*` + `Endpoint.path`.
+4. `./build-and-install.sh` to run on device/simulator; `RELEASE.md` for archive/upload.

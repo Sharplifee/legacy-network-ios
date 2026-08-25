@@ -1,0 +1,42 @@
+name: CI
+
+# NOTE: This job builds the iOS app, which requires a GitHub-hosted macOS runner
+# (or a self-hosted Mac). It is set to manual dispatch only: enable GitHub-hosted
+# macOS Actions for this repo (set an Actions spending limit — macOS minutes are
+# billable) or register a self-hosted macOS runner, then switch the trigger below
+# back to `push` / `pull_request` to validate every change automatically.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (iOS Simulator)
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode_15.4.app
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Build for simulator (no signing)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LegacyNetwork.xcodeproj \
+            -scheme LegacyNetwork \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            build
