@@ -33,11 +33,23 @@ struct MockDataService: DataService {
     // MARK: auth
 
     private var demoUser: User {
-        User(id: 1, name: "Dianne Powell", email: "dianne@legacynetwork.com",
-             avatarURL: nil, canUseAdmin: true, roles: ["distributor", "admin"])
+        User(id: 1, email: "dianne@legacynetwork.com", fullname: "Dianne Leavitt",
+             firstName: "Dianne", middleName: nil, lastName: "Leavitt",
+             isAdmin: true, isDistributor: true, isActivated: true, isSubscribed: true,
+             isTrainingDone: true, isPaid: false, isOrphan: true, partnerAdmin: false,
+             tierId: 3, tier: Tier(id: 3, name: "Pro", slug: "pro", price: "0.00",
+                 formattedPrice: "$0.00", isPaid: true, isFree: false, isActive: true, status: "active"),
+             isTrial: false, trialEndsAt: nil, trialDaysRemaining: nil,
+             isTrialActive: false, isTrialExpired: false,
+             dateOfBirth: nil, gender: nil, mobile: nil, intlMobile: nil, avatar: nil,
+             synergyId: "180555", synergyStatus: "ACTIVE", siteOrigin: "legacy", userLang: "en",
+             status: "active", hash: nil, allowNotification: true,
+             incomeGoalAmount: "5000", incomeGoalTargetDate: "2027-06-30",
+             mailingAddress1: nil, mailingAddress2: nil, mailingCity: nil,
+             mailingState: nil, mailingPostalCode: nil, mailingCountry: nil)
     }
     func login(email: String, password: String) async throws -> LoginResponse {
-        LoginResponse(token: "mock-session-token", user: demoUser)
+        LoginResponse(data: demoUser, token: "mock-session-token", accessToken: "mock-session-token", refreshToken: nil, tokenType: "Bearer", expiresIn: 86400, pelagoJwe: nil)
     }
     func currentUser() async throws -> User { demoUser }
     func profile() async throws -> User { demoUser }

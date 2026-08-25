@@ -9,18 +9,18 @@ struct ProfileView: View {
         }) { user in
             ScrollView {
                 VStack(spacing: Theme.Spacing.lg) {
-                    Avatar(url: user.avatarURL, name: user.name)
+                    Avatar(url: user.avatarURL, name: user.displayName)
                         .frame(width: 96, height: 96)
                         .padding(.top, Theme.Spacing.lg)
-                    Text(user.name).font(Theme.Font.title)
+                    Text(user.displayName).font(Theme.Font.title)
                     Text(user.email).font(Theme.Font.footnote).foregroundStyle(Theme.Color.textSecondary)
 
                     Card {
                         VStack(alignment: .leading, spacing: Theme.Spacing.md) {
                             LabeledRow(label: "Member ID", value: "\(user.id)")
-                            if let roles = user.roles, !roles.isEmpty {
-                                LabeledRow(label: "Roles", value: roles.joined(separator: ", "))
-                            }
+                            LabeledRow(label: "Role", value: user.isAdmin == true ? "Admin" : "Distributor")
+                            if let tier = user.tier { LabeledRow(label: "Tier", value: tier.name) }
+                            if let sid = user.synergyId { LabeledRow(label: "Synergy ID", value: sid) }
                         }
                     }
                 }

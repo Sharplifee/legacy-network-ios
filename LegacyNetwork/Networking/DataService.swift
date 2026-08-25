@@ -47,10 +47,10 @@ struct LiveDataService: DataService {
     func login(email: String, password: String) async throws -> LoginResponse {
         try await client.request(.login(email: email, password: password, deviceName: "LegacyNetwork-iOS"))
     }
-    func currentUser() async throws -> User { try await client.request(.currentUser) }
+    func currentUser() async throws -> User { try await client.request(.currentUser, as: CurrentUserResponse.self).data }
     func logout() async throws { try await client.send(.logout) }
     func dashboard() async throws -> DashboardData { try await client.request(.dashboard) }
-    func profile() async throws -> User { try await client.request(.profile) }
+    func profile() async throws -> User { try await client.request(.profile, as: CurrentUserResponse.self).data }
     func notifications(page: Int) async throws -> Paginated<NotificationItem> { try await client.request(.notifications(page: page)) }
     func networkTree() async throws -> NetworkNode { try await client.request(.networkTree(rootID: nil)) }
     func leaderboard(period: String) async throws -> [LeaderboardEntry] { try await client.request(.leaderboard(period: period)) }

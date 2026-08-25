@@ -96,11 +96,11 @@ struct SettingsView: View {
     private var profileCard: some View {
         Card {
             HStack(spacing: Theme.Spacing.lg) {
-                Avatar(url: user?.avatarURL, name: user?.name ?? "")
+                Avatar(url: user?.avatarURL, name: user?.displayName ?? "")
                     .frame(width: 56, height: 56)
 
                 VStack(alignment: .leading, spacing: Theme.Spacing.xxs) {
-                    Text(user?.name ?? "—")
+                    Text(user?.displayName ?? "—")
                         .font(Theme.Font.headline)
                         .foregroundStyle(Theme.Color.textPrimary)
                     Text(user?.email ?? "—")
