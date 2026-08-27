@@ -35,7 +35,3 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
         GENERATE_INFOPLIST_FILE: NO
-    entitlements:
-      path: LegacyNetwork/Resources/LegacyNetwork.entitlements
-      properties:
-        aps-environment: development
