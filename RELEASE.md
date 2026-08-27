@@ -112,16 +112,31 @@ xcrun altool --upload-app -f build/export/*.ipa -t ios \
 - `extraction/` and `EXTRACTION.md` remain gitignored — they are for authorized,
   locally-run forensic capture only and must never be committed.
 
-## Continuous Integration
+## Finish it entirely from CI (no local Mac)
 
-`.github/workflows/ci.yml` compiles the app (XcodeGen + `xcodebuild` against the
-iOS Simulator SDK, no signing). Building an iOS app requires a **macOS** runner,
-so the workflow is set to **manual dispatch** (`workflow_dispatch`) by default —
-GitHub-hosted macOS Actions minutes are billable and aren't provisioned on every
-plan/repo. To run CI automatically on every push/PR:
+Building/signing needs macOS. If you don't want to run Xcode locally, a macOS
+GitHub Actions runner does all of it. Three workflows are wired:
 
-1. Enable GitHub-hosted macOS Actions for the repo (set an Actions spending limit),
-   **or** register a self-hosted macOS runner.
-2. Change the `on:` trigger in `ci.yml` back to `push` / `pull_request`.
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `ci.yml` | push / PR / dispatch | Compiles for the iOS Simulator (no signing) — the compile gate. |
+| `screenshots.yml` | push / dispatch | Installs on an iPhone 16 Pro sim, runs the UI-test pass, and uploads a PNG of **every screen** (plus the raw `.xcresult`). |
+| `release.yml` | dispatch | Archives, signs, exports a distributable `.ipa`, and (optionally) uploads to TestFlight. |
 
-Until then, build locally on a Mac with `./build-and-install.sh` (see above).
+**To turn them on:**
+
+1. Enable GitHub-hosted macOS Actions for the repo (Settings → Billing → set an
+   Actions spending limit; macOS minutes are billable), **or** register a
+   self-hosted macOS runner. Until then these jobs fail fast with "no runner".
+2. `ci.yml` and `screenshots.yml` need nothing else — they run unsigned.
+3. For `release.yml`, add these repository **secrets**:
+   - `BUILD_CERTIFICATE_BASE64` — `base64 -i AppleDistribution.p12`
+   - `P12_PASSWORD` — that .p12's password
+   - `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`
+   - `APP_STORE_CONNECT_KEY_BASE64` — `base64 -i AuthKey_XXXX.p8`
+   Optionally set repo **variable** `UPLOAD_TO_TESTFLIGHT=true` to auto-upload.
+
+Once macOS minutes are on, every push compiles and screenshots automatically;
+`release.yml` produces the signed build on demand. Until then, build locally on a
+Mac with `./build-and-install.sh` (see above) — the workflows are armed and will
+start passing the moment a macOS runner is available, with no further edits.

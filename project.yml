@@ -39,3 +39,28 @@ targets:
       path: LegacyNetwork/Resources/LegacyNetwork.entitlements
       properties:
         aps-environment: development
+
+  LegacyNetworkUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: LegacyNetworkUITests
+    dependencies:
+      - target: LegacyNetwork
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.legacynetwork.app.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: LegacyNetwork
+
+schemes:
+  LegacyNetwork:
+    build:
+      targets:
+        LegacyNetwork: all
+        LegacyNetworkUITests: [test]
+    test:
+      targets:
+        - LegacyNetworkUITests
+      gatherCoverageData: false
