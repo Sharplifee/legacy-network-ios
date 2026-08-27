@@ -1,11 +1,13 @@
 name: CI
 
-# NOTE: This job builds the iOS app, which requires a GitHub-hosted macOS runner
-# (or a self-hosted Mac). It is set to manual dispatch only: enable GitHub-hosted
-# macOS Actions for this repo (set an Actions spending limit — macOS minutes are
-# billable) or register a self-hosted macOS runner, then switch the trigger below
-# back to `push` / `pull_request` to validate every change automatically.
+# Compiles the iOS app on a macOS runner. Requires GitHub-hosted macOS Actions
+# minutes (or a self-hosted Mac). If the account has no macOS minutes, this job
+# fails fast with "no runner" — enable macOS Actions (set an Actions spending
+# limit) and it runs automatically on every push/PR.
 on:
+  push:
+    branches: ["**"]
+  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -15,13 +17,13 @@ concurrency:
 jobs:
   build:
     name: Build (iOS Simulator)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -switch /Applications/Xcode_15.4.app
+      - name: Xcode version
+        run: xcodebuild -version
 
       - name: Install XcodeGen
         run: brew install xcodegen

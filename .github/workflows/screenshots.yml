@@ -1,0 +1,75 @@
+name: Screenshots
+
+# Installs the app on an iPhone 16 Pro simulator, runs the UI-test screenshot
+# pass, and uploads the captured PNGs (and the raw .xcresult, which always
+# contains them) as build artifacts. Lets us see exactly what the app renders
+# without a physical Mac. Requires macOS Actions minutes.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["**"]
+
+concurrency:
+  group: shots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: Capture screens (iPhone 16 Pro)
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Run UI screenshot tests
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LegacyNetwork.xcodeproj \
+            -scheme LegacyNetwork \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -resultBundlePath Result.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            test
+
+      - name: Extract screenshots from the simulator
+        if: always()
+        run: |
+          mkdir -p screenshots
+          # The UI test writes PNGs into the test runner's Documents container.
+          CONTAINER=$(xcrun simctl get_app_container booted com.legacynetwork.app.uitests data 2>/dev/null || true)
+          if [ -n "$CONTAINER" ] && [ -d "$CONTAINER/Documents" ]; then
+            cp "$CONTAINER"/Documents/*.png screenshots/ 2>/dev/null || true
+          fi
+          # Best-effort extraction from the result bundle as a fallback.
+          xcrun xcresulttool export attachments \
+            --path Result.xcresult \
+            --output-path screenshots 2>/dev/null || true
+          echo "Captured files:"; ls -la screenshots || true
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots/
+          if-no-files-found: warn
+
+      - name: Upload raw result bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult
+          path: Result.xcresult
+          if-no-files-found: warn
