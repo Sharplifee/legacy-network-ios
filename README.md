@@ -4,16 +4,23 @@ Native SwiftUI client for the Legacy Network platform.
 
 ## Overview
 
-Full native iOS replication of the Legacy Network web application, talking to the
-same live production backend. Same data, same users, same API — native experience.
+Full native iOS replication of the Legacy Network web application, built as a
+**static visual replica**: every screen renders fully populated, entirely offline.
+
+The shipped app makes **zero network calls** and needs no credentials to build or
+run. All content is served from `MockDataService`. A complete live API layer
+exists under `Networking/` but is dormant and never instantiated.
+
+> **See [HANDOFF.md](HANDOFF.md)** for full project state: architecture, every
+> screen and its data source, design tokens, build/install commands, and status.
 
 ## Stack
 
 - **UI:** SwiftUI, iOS 17.0+
 - **Project generation:** XcodeGen — `project.yml` is the single source of truth
-- **Networking:** async/await URLSession, typed endpoint enum
-- **Auth:** Laravel Sanctum bearer tokens, stored in Keychain
-- **Backend:** `https://api.legacynetwork.com` (PHP 8.3 / Laravel)
+- **Data:** `MockDataService` — in-memory fixtures, no I/O
+- **Networking:** async/await URLSession + typed endpoint enum — present but dormant
+- **Backend:** none in the shipped app
 
 ## Design System
 
@@ -22,7 +29,7 @@ same live production backend. Same data, same users, same API — native experie
 | Primary blue | `#3171CC` |
 | Teal accent | `#21BCAA` |
 | Dark header | `#1B1E23` |
-| Font | Helvetica Neue |
+| Font | Open Sans (bundled, matches the web app) |
 | Corner radius | 10px |
 
 ## Roles
@@ -36,10 +43,15 @@ Admin-only screens must never render for Distributor-role users.
 
 ## Build
 
+Requires Xcode and XcodeGen (`brew install xcodegen`). From a clean clone:
+
 ```bash
-xcodegen generate
-./build-and-install.sh
+./build-and-install.sh              # generate + sign + install to connected devices
+./build-and-install.sh --launch     # ...and launch
+./build-and-install.sh --build-only # sign only, no device needed
 ```
+
+Bundle ID `com.legacynetwork.app`, development team `XF783932R2`.
 
 ## Project Structure
 
@@ -57,7 +69,9 @@ LegacyNetwork/
 
 - Never edit `.xcodeproj` or `Info.plist` directly — they are generated from `project.yml`
 - The `extraction/` directory is gitignored: it contains live production user data
-- No credentials are committed to this repository
+- No credentials are committed to this repository, and none are needed
+- Mock data is **representative**, not scraped from a real account — this repo is
+  public, so real member/payment records must never be baked in (see HANDOFF.md §1)
 ## Status
 
 This branch is a **complete, self-consistent SwiftUI scaffold** authored in a

@@ -95,7 +95,7 @@ struct MockDataService: DataService {
                         volume: money(Double(total) * 40), isActive: true,
                         children: children, hasChildren: children?.isEmpty == false)
         }
-        return node("root", "Dianne Powell", "Director", 1284, children: [
+        return node("root", "Dianne Leavitt", "Director", 1284, children: [
             node("c1", "Marcus Bell", "Manager", 312, children: [
                 node("c1a", "Priya Shah", "Associate", 84),
                 node("c1b", "Leo Martin", "Associate", 61),
@@ -108,7 +108,7 @@ struct MockDataService: DataService {
     }
 
     func leaderboard(period: String) async throws -> [LeaderboardEntry] {
-        let names = ["Dianne Powell", "Marcus Bell", "Ava Reynolds", "Sofia Nguyen", "Noah Kim", "Priya Shah", "Leo Martin", "Grace Owens"]
+        let names = ["Dianne Leavitt", "Marcus Bell", "Ava Reynolds", "Sofia Nguyen", "Noah Kim", "Priya Shah", "Leo Martin", "Grace Owens"]
         return names.enumerated().map { i, name in
             LeaderboardEntry(id: "l\(i)", rank: i + 1, name: name, avatarURL: nil,
                              value: money(Double(9800 - i * 900)), change: (i % 3) - 1)
