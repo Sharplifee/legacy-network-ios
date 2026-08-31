@@ -26,6 +26,13 @@ PROJECT="LegacyNetwork.xcodeproj"
 
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Build into a DerivedData dir inside this checkout (gitignored). Without this,
+# locating the .app means scanning shared DerivedData and taking the newest
+# match by mtime, which silently picks up a *different* checkout's build when
+# more than one clone of this repo exists on the machine. Set after the cd so
+# it is anchored to the script's directory, not the caller's cwd.
+DERIVED="$(pwd)/build/DerivedData"
+
 LAUNCH=0
 BUILD_ONLY=0
 DEVICE_ARG=""
@@ -62,6 +69,7 @@ xcodebuild \
   -scheme "$SCHEME" \
   -configuration Debug \
   -destination 'generic/platform=iOS' \
+  -derivedDataPath "$DERIVED" \
   -allowProvisioningUpdates \
   DEVELOPMENT_TEAM="$TEAM_ID" \
   build
@@ -74,12 +82,9 @@ SETTINGS=$(xcodebuild -project "$PROJECT" -scheme "$SCHEME" -configuration Debug
 WRAPPER=$(echo "$SETTINGS" | awk -F' = ' '/ WRAPPER_NAME = /{print $2; exit}')
 WRAPPER="${WRAPPER:-$SCHEME.app}"
 
-APP=$(find ~/Library/Developer/Xcode/DerivedData -name "$WRAPPER" \
-  -path "*/Debug-iphoneos/*" ! -path "*/PlugIns/*" ! -path "*.app/*" \
-  -prune -print0 2>/dev/null \
-  | xargs -0 stat -f '%m %N' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
-if [[ -z "${APP:-}" || ! -d "$APP" ]]; then
-  echo "ERROR: built app '$WRAPPER' not found in DerivedData" >&2
+APP="$DERIVED/Build/Products/Debug-iphoneos/$WRAPPER"
+if [[ ! -d "$APP" ]]; then
+  echo "ERROR: built app not found at $APP" >&2
   exit 1
 fi
 echo "▸ Built: $APP"
