@@ -46,6 +46,7 @@ makes it easy to commit by accident.
 | Repo | `https://github.com/Sharplifee/legacy-network-ios` (**public**) |
 | Default branch | `main` |
 | Local clone | `/Users/connorsharp/LegacyNetwork` |
+| ⚠️ Superseded copy | `/Users/connorsharp/LegacyNetwork.stale-scaffold-backup` — **do not use** |
 | Bundle ID | `com.legacynetwork.app` |
 | Development team | `XF783932R2` (free personal team, Connor Sharp) |
 | Signing | Automatic, `-allowProvisioningUpdates` |
@@ -59,6 +60,14 @@ personal team can auto-sign (`LegacyNetwork.entitlements` is intentionally empty
 Do not re-add entitlements requiring a paid account. Free-team provisioning
 profiles expire after 7 days — if the app stops launching, just re-run
 `./build-and-install.sh`.
+
+**About the superseded copy.** Before 2026-08-31, `~/LegacyNetwork` held an
+untracked, divergent early scaffold (~2,000 LOC, a `Sources/` layout, no
+`MockDataService`, bundle ID `com.connor.legacynetwork`). It was never a clone of
+this repo and shares no history with it. It was moved aside to
+`~/LegacyNetwork.stale-scaffold-backup` and `~/LegacyNetwork` replaced with a real
+clone. Nothing in it is needed; it is kept only so nothing was destroyed. Delete
+it once you are confident, and never `git init`/force-push from it.
 
 ### Target device
 
@@ -95,14 +104,24 @@ preflights both and tells you what is missing.
 the single source of truth. Never hand-edit the Xcode project; edit `project.yml`
 and re-run `xcodegen generate`.
 
-Manual equivalent:
+Manual equivalent — note `-derivedDataPath`. Without it, `xcodebuild` writes to
+shared `~/Library/Developer/Xcode/DerivedData` and you have to guess which
+`Legacy Network.app` is yours; with two clones of this repo on one machine that
+silently installs the wrong build. Keep the build output inside the checkout:
+
 ```bash
 xcodegen generate
 xcodebuild -project LegacyNetwork.xcodeproj -scheme LegacyNetwork \
   -configuration Debug -destination 'generic/platform=iOS' \
+  -derivedDataPath "$(pwd)/build/DerivedData" \
   -allowProvisioningUpdates DEVELOPMENT_TEAM=XF783932R2 build
-xcrun devicectl device install app --device <ID> "<path>/Legacy Network.app"
+
+xcrun devicectl device install app \
+  --device 8B9459D4-67C1-53A8-906D-C79A34679CB9 \
+  "$(pwd)/build/DerivedData/Build/Products/Debug-iphoneos/Legacy Network.app"
 ```
+
+`build/` is gitignored, so this leaves the working tree clean.
 
 ### Install troubleshooting
 
@@ -146,6 +165,14 @@ Every screen is backed by one method on the `DataService` protocol
 
 Tab bar (`Views/MainTabView.swift`): **Home · Network · Earnings · Learn · [Admin] · Settings**.
 The Admin tab appears only when `role == .admin && canUseAdmin`.
+
+⚠️ In Admin role that is 6 tabs, and SwiftUI's `TabView` collapses anything past
+the fifth into a system **"More"** list. Confirmed on the simulator: the visible
+bar reads Home · Network · Earnings · Learn · **More**, with Admin and Settings
+(including the Current/Growth toggle) one tap deeper. Functional, but it does not
+match the web app's flat sidebar. If that fidelity matters, the fix is to move a
+destination off the tab bar — e.g. Settings behind a toolbar gear — rather than
+to add a sixth tab.
 
 | Screen | View | `DataService` method |
 |---|---|---|
@@ -271,13 +298,27 @@ headline 18 medium, body 16, callout 15, subhead 14 medium, footnote 13, caption
 - Zero network calls in the shipped app (verified by grep, §6)
 - Signed device build succeeds against team `XF783932R2`
 - `build-and-install.sh` rewritten: preflight, live device discovery, retry,
-  locked-device detection, `--build-only` and `--launch` modes
-- Verified reproducible from a clean clone (`--build-only` on a fresh `git clone`)
+  locked-device detection, `--build-only` and `--launch` modes, and a
+  checkout-local `-derivedDataPath` so it can never install another clone's build
+- Verified reproducible: a fresh `git clone` into a temp dir, script invoked from
+  an unrelated cwd, produced a signed `Legacy Network.app` inside its own checkout
+- Verified it actually runs: installed and launched on the iPhone 16 Pro
+  **simulator**; the app launches, stays up, and renders correctly (brand blue,
+  teal accents, cream input fill, bundled Open Sans resolving — a missing
+  `UIAppFonts` entry would silently fall back to the system font, and does not)
 
 **Known gaps / next steps**
-- Install to the physical iPhone was **blocked by the device being locked**
-  (`kAMDMobileImageMounterDeviceLocked`). Unlock the phone and run
+- Install to the **physical iPhone** was blocked the entire session by the device
+  being locked (`kAMDMobileImageMounterDeviceLocked`). The signed device build
+  itself succeeds — only the install step is pending. Unlock the phone and run
   `./build-and-install.sh --launch`. Nothing in the project needs changing.
+- Consequently the populated screens were confirmed on the **simulator**, not on
+  the physical device. Worth a look on-device once it installs.
+- Admin role overflows the tab bar into a system "More" list (see §5) — a
+  fidelity gap against the web sidebar, not a bug.
+- Large numbers render unseparated on the dashboard ("48210 BV", "1284"). The web
+  app most likely groups these ("48,210"). Left alone rather than guessed at,
+  since verifying it needs a look at the live UI.
 - No automated tests. `.github/workflows/ci.yml` builds only.
 - App icon is a placeholder in several sizes.
 - Numbers are representative, not live (§1).
