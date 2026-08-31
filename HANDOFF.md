@@ -247,6 +247,16 @@ The demo identity is `Dianne Leavitt` / `dianne@legacynetwork.com`. It appears i
 
 ---
 
+### Getting past the login screen
+
+On a fresh install the Keychain has no token, so the app opens on `LoginView`.
+The Log In button only requires both fields to be **non-empty** — `MockDataService.login`
+ignores the values entirely and returns the `Dianne Leavitt` fixture. Type anything
+into both fields and tap Log In. The session then persists across launches until
+you sign out or delete the app.
+
+---
+
 ## 8. Toggles
 
 **Current / Growth** (`State/AppSkin.swift`, control in `SettingsView.dataSkinControl`)
@@ -302,18 +312,13 @@ headline 18 medium, body 16, callout 15, subhead 14 medium, footnote 13, caption
   checkout-local `-derivedDataPath` so it can never install another clone's build
 - Verified reproducible: a fresh `git clone` into a temp dir, script invoked from
   an unrelated cwd, produced a signed `Legacy Network.app` inside its own checkout
-- Verified it actually runs: installed and launched on the iPhone 16 Pro
-  **simulator**; the app launches, stays up, and renders correctly (brand blue,
-  teal accents, cream input fill, bundled Open Sans resolving — a missing
-  `UIAppFonts` entry would silently fall back to the system font, and does not)
+- Verified it actually runs: installed and launched on **both** the iPhone 16 Pro
+  simulator and the physical iPhone 16 Pro. The app launches, stays up (confirmed
+  live in the device process list), and renders correctly — brand blue, teal
+  accents, cream input fill, bundled Open Sans resolving (a missing `UIAppFonts`
+  entry would silently fall back to the system font, and does not)
 
 **Known gaps / next steps**
-- Install to the **physical iPhone** was blocked the entire session by the device
-  being locked (`kAMDMobileImageMounterDeviceLocked`). The signed device build
-  itself succeeds — only the install step is pending. Unlock the phone and run
-  `./build-and-install.sh --launch`. Nothing in the project needs changing.
-- Consequently the populated screens were confirmed on the **simulator**, not on
-  the physical device. Worth a look on-device once it installs.
 - Admin role overflows the tab bar into a system "More" list (see §5) — a
   fidelity gap against the web sidebar, not a bug.
 - Large numbers render unseparated on the dashboard ("48210 BV", "1284"). The web
