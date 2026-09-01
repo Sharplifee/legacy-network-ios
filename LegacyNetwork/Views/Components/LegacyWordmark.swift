@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The LEGACY NETWORK wordmark: globe icon on the left, "LEGACY" bold uppercase,
+/// The LEGACY NETWORK wordmark: brand globe on the left, "LEGACY" bold uppercase,
 /// with "NETWORK" letterspaced below it. Matches the web app lockup.
 struct LegacyWordmark: View {
     var tint: Color = .white
@@ -25,16 +25,16 @@ struct LegacyWordmark: View {
     }
 }
 
-/// Simple globe glyph rendered with SF Symbols as a stand-in for the brand
-/// globe. Replace with the vector asset once the logo is exported.
+/// The real brand globe, vectored from the live site favicon and tinted to match
+/// its context (white on the blue login background).
 struct GlobeIcon: View {
     var tint: Color = .white
 
     var body: some View {
-        Image(systemName: "globe")
+        Image("LegacyGlobe")
             .resizable()
+            .renderingMode(.template)
             .scaledToFit()
-            .fontWeight(.regular)
             .foregroundStyle(tint)
     }
 }
