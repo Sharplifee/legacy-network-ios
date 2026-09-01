@@ -27,7 +27,7 @@ targets:
           - "**/.DS_Store"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.legacynetwork.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.connor.legacynetwork
         PRODUCT_NAME: "Legacy Network"
         INFOPLIST_FILE: LegacyNetwork/Resources/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
