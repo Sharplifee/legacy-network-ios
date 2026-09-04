@@ -24,10 +24,10 @@ struct LNNav: Identifiable { let id=UUID(); let label:String; let icon:String; l
 struct LNTrain: Identifiable { let id=UUID(); let title:String; let rank:Int; let lessons:Int; let desc:String }
 struct LNPack: Identifiable { let id=UUID(); let name:String; let price:String; let category:String }
 
-// MARK: - Real data (captured live, Dianne Leavitt / Synergy 180555)
+// MARK: - Real data (captured live, Synergy 180555)
 enum LNData {
-    static let name="Dianne Leavitt", synergy="180555", tier="Pro", city="Orem, UT"
-    static let billingContact="DIANE LEAVITT", billingLine="1774 High Country Dr, Orem, UT"
+    static let name="Connor Sharp", synergy="180555", tier="Pro", city="Orem, UT"
+    static let billingContact="CONNOR SHARP", billingLine="1774 High Country Dr, Orem, UT"
 
     static let subs:[LNSubPoint] = {
         let m=["OCT","NOV","DEC","JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP"]
@@ -187,7 +187,7 @@ struct LNAvatar: View {
     var size:CGFloat
     var body: some View {
         Group { if let ui=UIImage(named:"Avatar"){ Image(uiImage:ui).resizable().scaledToFill() }
-            else { ZStack{ LN.blue; Text("DL").foregroundStyle(.white).font(.system(size:size*0.4,weight:.bold)) } } }
+            else { ZStack{ LN.blue; Text("CS").foregroundStyle(.white).font(.system(size:size*0.4,weight:.bold)) } } }
         .frame(width:size,height:size).clipShape(Circle()).overlay(Circle().stroke(Color(white:0.2),lineWidth:2))
     }
 }
@@ -325,7 +325,7 @@ struct LNBusiness: View {
     let items:[(String,String,AnyView)] = [
         ("Invites","paperplane.fill", AnyView(LNSimpleList(title:"Invites", rows:[.init(title:"Pending invites", sub:"0 outstanding", icon:"paperplane"), .init(title:"Send new invite", sub:"Distributor or customer", icon:"plus.circle")]))),
         ("Business Partners","person.2.fill", AnyView(LNSimpleList(title:"Business Partners", rows:[.init(title:"\(LNData.teamTotal) partners", sub:"Your organization", icon:"person.2")]))),
-        ("Members Tree","point.topleft.down.curvedto.point.bottomright.up", AnyView(LNSimpleList(title:"Members Tree", rows:[.init(title:"Dianne Leavitt", sub:"Director · root", icon:"person.crop.circle"), .init(title:"Direct downline", sub:"View your genealogy", icon:"arrow.down")]))),
+        ("Members Tree","point.topleft.down.curvedto.point.bottomright.up", AnyView(LNSimpleList(title:"Members Tree", rows:[.init(title:"Connor Sharp", sub:"Director · root", icon:"person.crop.circle"), .init(title:"Direct downline", sub:"View your genealogy", icon:"arrow.down")]))),
         ("Goals","target", AnyView(LNSimpleList(title:"Goals", rows:LNData.goals))),
         ("Benefits","gift.fill", AnyView(LNSimpleList(title:"Benefits", rows:[.init(title:"Rank benefits", sub:"Director tier", icon:"gift")]))),
         ("Reports","chart.bar.fill", AnyView(LNSimpleList(title:"Reports", rows:[.init(title:"Volume report", sub:"6-month view", icon:"chart.bar"), .init(title:"Enrollment report", sub:"New members", icon:"chart.line.uptrend.xyaxis")]))),
@@ -505,3 +505,4 @@ struct LNPlaceholder: View { let title:String; let icon:String
         }
     }
 }
+
