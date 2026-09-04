@@ -448,10 +448,15 @@ struct LNSettings: View {
     ]
     var body: some View {
         LNScreen(title:"Settings"){
-            HStack(spacing:14){ LNAvatar(size:56)
-                VStack(alignment:.leading,spacing:3){ Text(LNData.name).font(.system(size:17,weight:.bold)).foregroundStyle(LN.ink)
+            HStack(spacing:14){
+                LNAvatar(size:56)
+                VStack(alignment:.leading,spacing:3){
+                    Text(LNData.name).font(.system(size:17,weight:.bold)).foregroundStyle(LN.ink)
                     Text("Synergy ID \(LNData.synergy) · \(LNData.tier)").font(.system(size:13)).foregroundStyle(LN.mut)
-                    Text(LNData.city).font(.system(size:13)).foregroundStyle(LN.mut) } Spacer() }
+                    Text(LNData.city).font(.system(size:13)).foregroundStyle(LN.mut)
+                }
+                Spacer()
+            }
                 .padding(16).background(Color.white).clipShape(RoundedRectangle(cornerRadius:14)).overlay(RoundedRectangle(cornerRadius:14).stroke(LN.line))
             VStack(spacing:0){ ForEach(Array(rows.enumerated()),id:\.offset){ _,r in
                 NavigationLink{ r.2 } label:{ LNMenuRow(label:r.0, icon:r.1) }
