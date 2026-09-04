@@ -29,9 +29,12 @@ enum LNData {
     static let name="Connor Sharp", synergy="180555", tier="Pro", city="Orem, UT"
     static let billingContact="CONNOR SHARP", billingLine="1774 High Country Dr, Orem, UT"
 
+    // Slow, steady growth beginning February 2026 (flat through late 2025, then a gentle climb)
     static let subs:[LNSubPoint] = {
         let m=["OCT","NOV","DEC","JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP"]
-        let t=[1.0,1,1,1,2,5,3,2,2,1,3,1], s=[0.0,0,1,0,1,3,1,1,1,0,2,0], u=[0.0,0,0,0,0,1,0,0,0,0,1,0]
+        let t=[0.0,0,1,2,4,8,13,20,29,40,53,67]      // cumulative total subscribers
+        let s=[0.0,0,1,1,3,4,6,8,10,12,14,15]        // new subscribed per month
+        let u=[0.0,0,0,0,0,1,1,1,2,1,2,2]            // unsubscribed per month
         return (0..<12).map{ LNSubPoint(month:m[$0],total:t[$0],subscribed:s[$0],unsub:u[$0]) }
     }()
 
@@ -505,4 +508,5 @@ struct LNPlaceholder: View { let title:String; let icon:String
         }
     }
 }
+
 
