@@ -31,10 +31,12 @@ enum LNData {
 
     // Slow, steady growth beginning February 2026 (flat through late 2025, then a gentle climb)
     static let subs:[LNSubPoint] = {
+        // Real-world style: flat through late 2025, growth kicks in Feb 2026, then
+        // a choppy up-and-down climb (churn causes dips) netting upward, peaking to-date in Sep.
         let m=["OCT","NOV","DEC","JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP"]
-        let t=[0.0,0,1,2,4,8,13,20,29,40,53,67]      // cumulative total subscribers
-        let s=[0.0,0,1,1,3,4,6,8,10,12,14,15]        // new subscribed per month
-        let u=[0.0,0,0,0,0,1,1,1,2,1,2,2]            // unsubscribed per month
+        let t=[0.0,1,1,2,6,11,9,16,14,24,31,43]   // total subscribers (jagged, net up, peak Sep)
+        let s=[0.0,1,0,1,6,9,5,12,7,14,11,18]     // new subscribed per month (grows with wobble)
+        let u=[0.0,0,0,0,1,2,6,3,7,4,5,5]         // unsubscribed per month (real churn)
         return (0..<12).map{ LNSubPoint(month:m[$0],total:t[$0],subscribed:s[$0],unsub:u[$0]) }
     }()
 
@@ -508,5 +510,6 @@ struct LNPlaceholder: View { let title:String; let icon:String
         }
     }
 }
+
 
 
