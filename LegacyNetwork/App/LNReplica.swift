@@ -628,7 +628,7 @@ struct LNSettings: View {
     let rows: [(String,String,Color,AnyView)] = [
         ("Account","person.crop.circle.fill", UI.primary, AnyView(LNAccount())),
         ("Notification Settings","bell.badge.fill", UI.teal, AnyView(LNMini("Notification Settings","bell.badge.fill"))),
-        ("Manage Subscription","creditcard.fill", UI.primary, AnyView(LNList("Manage Subscription", [.init(title:"Legacy Pro", sub:"Active · $49.00/mo", icon:"checkmark.seal.fill", trailing:"Active")]))),
+        ("Manage Subscription","creditcard.fill", UI.primary, AnyView(LNList("Manage Subscription", [.init(title:"Legacy Pro", sub:"Active · $49.00/mo", trailing:"Active", icon:"checkmark.seal.fill")]))),
         ("Payment Information","dollarsign.circle.fill", UI.green, AnyView(LNList("Payment Information", [.init(title:LNData.billingContact, sub:LNData.billingLine, icon:"creditcard")]))),
         ("Payment History","clock.fill", UI.amber, AnyView(LNList("Payment History", [.init(title:"\(LNData.ordersTotal) transactions", sub:"View full history", icon:"clock")]))),
         ("Change Password","lock.fill", UI.ink2, AnyView(LNMini("Change Password","lock.fill"))),
