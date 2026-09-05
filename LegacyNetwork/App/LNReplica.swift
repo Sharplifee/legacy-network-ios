@@ -627,12 +627,12 @@ struct LNAchievements: View {
 struct LNSettings: View {
     let rows: [(String,String,Color,AnyView)] = [
         ("Account","person.crop.circle.fill", UI.primary, AnyView(LNAccount())),
-        ("Notification Settings","bell.badge.fill", UI.teal, AnyView(LNMini("Notification Settings","bell.badge.fill"))),
+        ("Notification Settings","bell.badge.fill", UI.teal, AnyView(LNNotificationSettings())),
         ("Manage Subscription","creditcard.fill", UI.primary, AnyView(LNList("Manage Subscription", [.init(title:"Legacy Pro", sub:"Active · $49.00/mo", trailing:"Active", icon:"checkmark.seal.fill")]))),
         ("Payment Information","dollarsign.circle.fill", UI.green, AnyView(LNList("Payment Information", [.init(title:LNData.billingContact, sub:LNData.billingLine, icon:"creditcard")]))),
         ("Payment History","clock.fill", UI.amber, AnyView(LNList("Payment History", [.init(title:"\(LNData.ordersTotal) transactions", sub:"View full history", icon:"clock")]))),
-        ("Change Password","lock.fill", UI.ink2, AnyView(LNMini("Change Password","lock.fill"))),
-        ("Personal URL","link", UI.primary, AnyView(LNMini("Personal URL","link"))),
+        ("Change Password","lock.fill", UI.ink2, AnyView(LNChangePassword())),
+        ("Personal URL","link", UI.primary, AnyView(LNPersonalURL())),
     ]
     var body: some View {
         Screen(title: "Settings", showAvatar: false) {
@@ -716,7 +716,87 @@ struct LNMini: View {
     }
 }
 
+// MARK: - Settings sub-screens (real)
+struct LNToggleRow: View {
+    let title: String; let sub: String; @State var on: Bool
+    var body: some View {
+        HStack(spacing: 14) {
+            IconChip(sf: "bell.fill", tint: UI.teal, size: 42)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.system(size: 15.5, weight: .semibold)).foregroundStyle(UI.ink)
+                Text(sub).font(.system(size: 13)).foregroundStyle(UI.muted)
+            }
+            Spacer()
+            Toggle("", isOn: $on).labelsHidden().tint(UI.primary)
+        }.padding(.vertical, 10).padding(.horizontal, 16)
+    }
+}
+struct LNNotificationSettings: View {
+    var body: some View {
+        Screen(title: "Notifications", showAvatar: false) {
+            Text("Choose what you want to be notified about.").font(.system(size: 14)).foregroundStyle(UI.ink2)
+            rowsCard {
+                LNToggleRow(title: "Email notifications", sub: "Product & account emails", on: true)
+                Divider().overlay(UI.hair).padding(.leading, 72)
+                LNToggleRow(title: "SMS alerts", sub: "Text message updates", on: true)
+                Divider().overlay(UI.hair).padding(.leading, 72)
+                LNToggleRow(title: "Push notifications", sub: "On this device", on: false)
+                Divider().overlay(UI.hair).padding(.leading, 72)
+                LNToggleRow(title: "Event reminders", sub: "Before live events", on: true)
+                Divider().overlay(UI.hair).padding(.leading, 72)
+                LNToggleRow(title: "New subscriber alerts", sub: "When someone joins", on: true)
+            }
+        }
+    }
+}
+struct LNChangePassword: View {
+    @State private var cur = ""; @State private var new1 = ""; @State private var new2 = ""
+    var body: some View {
+        Screen(title: "Change Password", showAvatar: false) {
+            VStack(spacing: 14) {
+                secure("Current password", $cur)
+                secure("New password", $new1)
+                secure("Confirm new password", $new2)
+            }.card()
+            Button { } label: {
+                Text("Update Password").font(.system(size: 16, weight: .bold)).foregroundStyle(.white)
+                    .frame(maxWidth: .infinity).frame(height: 52)
+                    .background(UI.primary).clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
+            Text("Use at least 8 characters with a mix of letters and numbers.").font(.system(size: 12)).foregroundStyle(UI.muted)
+        }
+    }
+    private func secure(_ ph: String, _ t: Binding<String>) -> some View {
+        SecureField("", text: t, prompt: Text(ph).foregroundColor(UI.muted))
+            .padding(.horizontal, 16).frame(height: 50)
+            .background(UI.bg).clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+struct LNPersonalURL: View {
+    private let purl = "legacynetwork.com/connorsharp"
+    @State private var copied = false
+    var body: some View {
+        Screen(title: "Personal URL", showAvatar: false) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Your personal replicated site").font(.system(size: 14)).foregroundStyle(UI.ink2)
+                HStack {
+                    Image(systemName: "link").foregroundStyle(UI.primary)
+                    Text(purl).font(.system(size: 15, weight: .semibold)).foregroundStyle(UI.ink).lineLimit(1)
+                    Spacer()
+                }.padding(16).background(UI.bg).clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                Button { copied = true } label: {
+                    HStack { Image(systemName: copied ? "checkmark" : "doc.on.doc"); Text(copied ? "Copied" : "Copy link").fontWeight(.semibold) }
+                        .foregroundStyle(.white).frame(maxWidth: .infinity).frame(height: 50)
+                        .background(UI.primary).clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                }
+            }.card()
+            Text("Share this link so new customers and partners sign up under you.").font(.system(size: 13)).foregroundStyle(UI.muted)
+        }
+    }
+}
+
 // helper for nav rows inside rowsCard
 @ViewBuilder func navRow<D: View>(_ title: String, _ sf: String, _ tint: Color, @ViewBuilder _ dest: @escaping () -> D) -> some View {
     NavigationLink { dest() } label: { RowItem(title: title, sf: sf, tint: tint) }
 }
+
