@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Legacy Network — Member Area</title>
+  <meta name="description" content="Member area replica of app.legacynetwork.com (beta-1.6.8) — dashboard, team, commissions, shop, orders, achievements." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <!-- Member-area replica of app.legacynetwork.com (Vue SPA beta-1.6.8).
+       Design tokens taken verbatim from the live /css/app.css?v=beta-1.6.8 bundle.
+       Runs on mock data (window.LN) — real data swaps in from an owner HAR capture. -->
+
+  <!-- ============ LOGIN ============ -->
+  <section id="login" class="login">
+    <div class="login__card">
+      <div class="login__brand"><span class="login__mark">LN</span><span>Legacy Network</span></div>
+      <h1 class="login__title">Member Sign In</h1>
+      <p class="login__sub">Welcome back. Sign in to your dashboard.</p>
+      <form id="loginForm" class="login__form" autocomplete="off">
+        <label class="field"><span>Email</span>
+          <input type="email" id="loginEmail" placeholder="you@email.com" value="dianne@legacynetwork.com" /></label>
+        <label class="field"><span>Password</span>
+          <input type="password" id="loginPass" placeholder="••••••••" value="demo-mode" /></label>
+        <div class="login__row">
+          <label class="check"><input type="checkbox" checked /> Remember me</label>
+          <a href="#" class="muted-link">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block">Sign In</button>
+      </form>
+      <p class="login__foot">Demo shell · no real authentication · mock data</p>
+      <p class="login__ver">beta-1.6.8 · replica</p>
+    </div>
+  </section>
+
+  <!-- ============ APP SHELL ============ -->
+  <div id="app" class="app" hidden>
+    <!-- Sidebar (desktop) -->
+    <aside class="side">
+      <div class="side__brand"><span class="side__mark">LN</span><span class="side__word">Legacy&nbsp;Network</span></div>
+      <nav class="side__nav" id="sideNav"></nav>
+      <div class="side__user" id="sideUser"></div>
+    </aside>
+
+    <!-- Main column -->
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn only-mobile" id="menuBtn" aria-label="Menu">☰</button>
+        <div class="topbar__title" id="pageTitle">Dashboard</div>
+        <div class="topbar__actions">
+          <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+          <button class="icon-btn cartbtn" id="cartBtn" aria-label="Cart">
+            🛒<span class="cart-count" id="cartCount">0</span>
+          </button>
+          <div class="topbar__avatar" id="topAvatar">DL</div>
+        </div>
+      </header>
+
+      <main class="view" id="view"></main>
+    </div>
+
+    <!-- Bottom nav (mobile) -->
+    <nav class="bottomnav" id="bottomNav"></nav>
+
+    <!-- Cart drawer -->
+    <div class="drawer-scrim" id="scrim" hidden></div>
+    <aside class="cart" id="cart" hidden>
+      <div class="cart__top">
+        <strong>Your Cart</strong>
+        <button class="icon-btn" id="closeCart" aria-label="Close">✕</button>
+      </div>
+      <div class="cart__lines" id="cartLines"></div>
+      <div class="cart__summary" id="cartSummary"></div>
+    </aside>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
