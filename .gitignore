@@ -55,4 +55,4 @@ EXTRACTION.md
 *.env
 .env.local
 Secrets.swift
-Credentials.plist
+Credentials.plistweb/

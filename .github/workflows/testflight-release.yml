@@ -1,0 +1,86 @@
+name: TestFlight release
+
+# Runs after every iOS build (and on demand): waits for Apple to finish
+# processing the newest build, answers export compliance if Apple is waiting on
+# it, and adds the build to every internal TestFlight group so it shows up on
+# testers' phones. Prints only counts and states, never tester names or emails.
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["iOS build and TestFlight"]
+    types: [completed]
+  push:
+    branches: [main]
+    paths: ['.github/workflows/testflight-release.yml']
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Release newest build to TestFlight testers
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          APP_ID: "6807329508"
+        run: |
+          pip3 install --quiet pyjwt cryptography requests
+          python3 - <<'PY'
+          import os, time, base64, jwt, requests
+          kid = os.environ["ASC_KEY_ID"]; iss = os.environ["ASC_ISSUER_ID"]; app = os.environ["APP_ID"]
+          p8 = base64.b64decode(os.environ["ASC_KEY_P8"]).decode()
+          B = "https://api.appstoreconnect.apple.com/v1"
+
+          def tok():
+              n = int(time.time())
+              return jwt.encode({"iss": iss, "iat": n, "exp": n + 1100, "aud": "appstoreconnect-v1"},
+                                p8, algorithm="ES256", headers={"kid": kid})
+
+          def api(m, path, **kw):
+              r = requests.request(m, B + path, timeout=60,
+                                   headers={"Authorization": "Bearer " + tok(), "Content-Type": "application/json"}, **kw)
+              if r.status_code >= 400:
+                  print("ASC", m, path, r.status_code, r.text[:800])
+              return r
+
+          a = api("GET", f"/apps/{app}").json()["data"]["attributes"]
+          print("app:", a.get("name"), "| bundle:", a.get("bundleId"))
+
+          d = api("GET", f"/builds?filter[app]={app}&sort=-uploadedDate&limit=6").json()
+          for b in d["data"]:
+              at = b["attributes"]
+              print("build", at["version"], at["processingState"], "EXPIRED" if at.get("expired") else "",
+                    "encryption:", at.get("usesNonExemptEncryption"), at.get("uploadedDate"))
+          newest = d["data"][0]; bid = newest["id"]; ver = newest["attributes"]["version"]
+
+          for _ in range(60):
+              st = api("GET", f"/builds/{bid}").json()["data"]["attributes"]
+              print("build", ver, "state:", st["processingState"])
+              if st["processingState"] != "PROCESSING":
+                  break
+              time.sleep(30)
+          if st["processingState"] != "VALID":
+              print("BUILD NOT VALID:", st["processingState"]); raise SystemExit(1)
+
+          if st.get("usesNonExemptEncryption") is None:
+              api("PATCH", f"/builds/{bid}", json={"data": {"type": "builds", "id": bid,
+                  "attributes": {"usesNonExemptEncryption": False}}})
+              print("answered export compliance: no non-exempt encryption")
+
+          groups = api("GET", f"/betaGroups?filter[app]={app}&limit=50").json().get("data", [])
+          if not groups:
+              print("NO TESTFLIGHT GROUPS on this app")
+          for g in groups:
+              ga = g["attributes"]
+              n = len(api("GET", f"/betaGroups/{g['id']}/betaTesters?limit=200").json().get("data", []))
+              print("group", repr(ga["name"]), "internal" if ga.get("isInternalGroup") else "external",
+                    "| all builds" if ga.get("hasAccessToAllBuilds") else "", "| testers:", n)
+              if ga.get("isInternalGroup"):
+                  r = api("POST", f"/betaGroups/{g['id']}/relationships/builds",
+                          json={"data": [{"type": "builds", "id": bid}]})
+                  print("  added build", ver, "->", r.status_code)
+
+          bd = api("GET", f"/builds/{bid}/buildBetaDetail").json()["data"]["attributes"]
+          print("FINAL build", ver, "internal:", bd.get("internalBuildState"), "external:", bd.get("externalBuildState"))
+          PY
