@@ -40,17 +40,14 @@
 	</array>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleLightContent</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-
-	<!-- Bundled Open Sans faces (SIL OFL). Referenced by PostScript name in Theme. -->
-	<key>UIAppFonts</key>
-	<array>
-		<string>OpenSans-Regular.ttf</string>
-		<string>OpenSans-Medium.ttf</string>
-		<string>OpenSans-SemiBold.ttf</string>
-		<string>OpenSans-Bold.ttf</string>
-	</array>
 
 	<!-- App Transport Security: force TLS for all API traffic -->
 	<key>NSAppTransportSecurity</key>
@@ -71,14 +68,5 @@
 		</dict>
 	</dict>
 
-	<!-- Privacy usage descriptions -->
-	<key>NSCameraUsageDescription</key>
-	<string>Legacy Network uses the camera so you can update your profile photo.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Legacy Network needs access to your photo library so you can choose a profile photo.</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Legacy Network uses Face ID to keep your account secure when you sign in.</string>
-	<key>NSUserNotificationsUsageDescription</key>
-	<string>Legacy Network sends notifications about commissions, achievements, and network activity.</string>
 </dict>
 </plist>
