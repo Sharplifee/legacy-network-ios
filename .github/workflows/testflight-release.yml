@@ -24,6 +24,7 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
           APP_ID: "6807329508"
+          BUILD_RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
         run: |
           pip3 install --quiet pyjwt cryptography requests
           python3 - <<'PY'
@@ -47,12 +48,20 @@ jobs:
           a = api("GET", f"/apps/{app}").json()["data"]["attributes"]
           print("app:", a.get("name"), "| bundle:", a.get("bundleId"))
 
-          d = api("GET", f"/builds?filter[app]={app}&sort=-uploadedDate&limit=6").json()
+          rn = os.environ.get("BUILD_RUN_NUMBER", "").strip()
+          want = str(int(rn) + 100) if rn.isdigit() else ""   # build number = run number + 100
+          for _ in range(60):  # Apple can take several minutes to list a fresh upload
+              d = api("GET", f"/builds?filter[app]={app}&sort=-uploadedDate&limit=6").json()
+              if not want or any(b["attributes"]["version"] == want for b in d["data"]):
+                  break
+              print("waiting for build", want, "to appear at Apple")
+              time.sleep(30)
           for b in d["data"]:
               at = b["attributes"]
               print("build", at["version"], at["processingState"], "EXPIRED" if at.get("expired") else "",
                     "encryption:", at.get("usesNonExemptEncryption"), at.get("uploadedDate"))
-          newest = d["data"][0]; bid = newest["id"]; ver = newest["attributes"]["version"]
+          newest = next((b for b in d["data"] if b["attributes"]["version"] == want), d["data"][0])
+          bid = newest["id"]; ver = newest["attributes"]["version"]
 
           for _ in range(60):
               st = api("GET", f"/builds/{bid}").json()["data"]["attributes"]
