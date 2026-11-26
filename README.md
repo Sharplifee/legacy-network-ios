@@ -14,6 +14,8 @@ redrawn natively, so the app matches the replica pixel for pixel.
 - Every screen view, tap, JS error and load step goes to the append-only
   `event_log` via `EventLog.swift`.
 
+Website (same file, deploys on every push to `main`): https://temporary-swift-platinum-irlncys.vercel.app
+
 ## Updating the app
 Replace `LegacyNetwork/Resources/replica.html` with the new replica and push to
 `main`. GitHub Actions (`.github/workflows/ios.yml`) builds on a hosted Mac,
